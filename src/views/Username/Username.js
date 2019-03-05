@@ -23,19 +23,12 @@ class Username extends Component {
     const { username, pic } = this.state;
     const user = firebase.auth().currentUser;
     const db = firebase.firestore();
-    console.log(user);
     db.collection('users')
       .doc(user.uid)
       .set({
         name: user.displayName,
         username,
         pic
-      })
-      .then(docRef => {
-        console.log('Document written with ID: ', docRef.id);
-      })
-      .catch(error => {
-        console.error('Error adding document: ', error);
       });
     this.props.history.push('/home');
   };
@@ -46,7 +39,6 @@ class Username extends Component {
 
   render() {
     const { username, pic } = this.state;
-    console.log(firebase.auth().currentUser);
     return (
       <form className="username-content" onSubmit={this.createUser}>
         <h1>To complete signup:</h1>

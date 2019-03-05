@@ -1,31 +1,29 @@
 import React, { Component } from 'react';
-import './Login.scss';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import Username from '../Username/Username';
+import Home from '../Home/Home';
 import firebase from '../../firebase';
 
 class Login extends Component {
-  componentDidMount = () => {
+  componentDidMount() {
     firebase.auth().onAuthStateChanged(user => {
-      console.log(user);
-      return <Username />;
-    });
-  };
-  uiConfig = {
-    callbacks: {
-      signInSuccessWithAuthResult: (authResult, redirectUrl) => {
-        console.log(authResult, redirectUrl);
-        if (authResult.additionalUserInfo.isNewUser === true) {
-          return true;
-        }
-        return <Username />;
+      if (user) {
+        this.props.history.push('/home');
       }
+    });
+  }
+
+  uiConfig = {
+    signInSuccessWithAuthResult: (authResult, redirectUrl) => {
+      if (authResult.additionalUserInfo.isNewUser === true) {
+        return true;
+      }
+      return <Home />;
     },
     signInFlow: 'popup',
-    signInSuccessUrl: 'http://localhost:3000/username',
+    signInSuccessUrl: 'https://offtherecord-2a9df.firebaseapp.com/username',
     signInOptions: [
-      firebase.auth.EmailAuthProvider.PROVIDER_ID,
-      firebase.auth.GoogleAuthProvider.PROVIDER_ID
+      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+      firebase.auth.EmailAuthProvider.PROVIDER_ID
     ]
   };
 

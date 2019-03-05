@@ -14,28 +14,25 @@ class Home extends Component {
 
   componentDidMount() {
     const db = firebase.firestore();
-
     db.collection('messages')
-      .orderBy('timestamp', 'asc')
+      .orderBy('timestamp', 'desc')
       .limit(100)
       .onSnapshot(snap => {
-        console.log(snap.doc);
         let messages = [];
         snap.forEach(doc => messages.push(doc.data()));
         this.setState({ messages });
       });
 
     firebase.auth().onAuthStateChanged(user => {
+      if (!user) {
+        this.props.history.push('/');
+      }
       db.collection('users')
         .doc(user.uid)
         .get()
         .then(doc => {
-          if (doc.exists) {
-            console.log(doc.data());
-            this.setState({ user: doc.data() });
-          }
-        })
-        .catch(err => console.log(err));
+          this.setState({ user: doc.data() });
+        });
     });
   }
 
@@ -49,16 +46,21 @@ class Home extends Component {
   sendMessage = () => {
     const { user, input } = this.state;
     const db = firebase.firestore();
-    console.log(user);
     db.collection('messages')
       .add({
         from: user.username,
         input,
         pic: user.pic,
-        timestamp: new Date()
+        timestamp: firebase.database.ServerValue.TIMESTAMP
       })
-      .then(() => this.setState({ input: '' }))
-      .catch(err => console.log(err));
+      .then(() => this.setState({ input: '' }));
+  };
+
+  enterMessage = e => {
+    const { input } = this.state;
+    if (e.keyCode === 13 && e.ctrlKey && input !== '') {
+      this.sendMessage();
+    }
   };
 
   render() {
@@ -74,20 +76,26 @@ class Home extends Component {
         </div>
       );
     });
-    console.log();
+
     return (
       <div className="home-cont">
-        <div className="msg-cont">
-          <h1>Messages</h1>
-          {messagesList}
-        </div>
+        <h1>Messages</h1>
+        <div className="msg-cont">{messagesList}</div>
         <div className="input-cont">
           <textarea
             value={input}
             onChange={e => this.setState({ input: e.target.value })}
             rows="3"
+            maxLength="500"
+            onKeyDown={this.enterMessage}
+            placeholder="Press ctrl + enter or click button to send message"
           />
-          <button onClick={this.sendMessage}>Send Message</button>
+          <button
+            disabled={input === '' ? true : false}
+            onClick={this.sendMessage}
+          >
+            Send Message
+          </button>
         </div>
       </div>
     );
