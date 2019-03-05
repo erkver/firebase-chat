@@ -1,0 +1,69 @@
+.home-cont {
+  display: flex;
+  flex-direction: column;
+  background: black;
+  color: limegreen;
+}
+
+.msg-cont {
+  width: 100%;
+  height: 70vh;
+  overflow-y: auto;
+
+  .msg-card {
+    width: 70%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: auto;
+    border: 1px solid limegreen;
+
+    .info-cont {
+      width: 15%;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+
+      img {
+        width: 20%;
+      }
+    }
+
+    .input {
+      width: 85%;
+      text-align: start;
+    }
+  }
+}
+
+.input-cont {
+  width: 70%;
+  height: 30vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: auto;
+
+  textarea {
+    margin-top: 10px;
+    width: 50%;
+    height: 80%;
+  }
+
+  button {
+    border: 1px solid limegreen;
+    background: black;
+    color: limegreen;
+    font-size: 24px;
+    border-radius: 5px;
+    padding: 2%;
+    transition: 0.2s;
+
+    &:hover {
+      transition: 0.2s;
+      border: 1px solid black;
+      background: limegreen;
+      color: black;
+    }
+  }
+}

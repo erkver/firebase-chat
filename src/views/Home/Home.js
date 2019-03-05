@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import firebase from '../../firebase';
+import './Home.scss';
 
 class Home extends Component {
   constructor() {
@@ -18,11 +19,12 @@ class Home extends Component {
       .orderBy('timestamp', 'asc')
       .limit(100)
       .onSnapshot(snap => {
-        console.log(snap.docs);
-        let messages = [...this.state.messages];
+        console.log(snap.doc);
+        let messages = [];
         snap.forEach(doc => messages.push(doc.data()));
         this.setState({ messages });
       });
+
     firebase.auth().onAuthStateChanged(user => {
       db.collection('users')
         .doc(user.uid)
@@ -38,8 +40,10 @@ class Home extends Component {
   }
 
   componentWillUnmount() {
-    const db = firebase.firestore();
-    db.collection('messages').unsubscribe();
+    firebase
+      .firestore()
+      .collection('messages')
+      .unsubscribe();
   }
 
   sendMessage = () => {
@@ -47,8 +51,7 @@ class Home extends Component {
     const db = firebase.firestore();
     console.log(user);
     db.collection('messages')
-      .doc('global')
-      .set({
+      .add({
         from: user.username,
         input,
         pic: user.pic,
@@ -62,19 +65,23 @@ class Home extends Component {
     const { input, messages } = this.state;
     let messagesList = messages.map((msg, i) => {
       return (
-        <div key={i}>
-          <img src={msg.pic} alt="" />
-          <p className="username"> {msg.from}</p>
-          <p className="username"> {msg.input}</p>
+        <div className="msg-card" key={i}>
+          <div className="info-cont">
+            <img src={msg.pic} alt="" />
+            <p>{msg.from}</p>
+          </div>
+          <p className="input">{msg.input}</p>
         </div>
       );
     });
-
+    console.log();
     return (
-      <div>
-        <h1>Messages</h1>
-        {messagesList}
-        <div>
+      <div className="home-cont">
+        <div className="msg-cont">
+          <h1>Messages</h1>
+          {messagesList}
+        </div>
+        <div className="input-cont">
           <textarea
             value={input}
             onChange={e => this.setState({ input: e.target.value })}
